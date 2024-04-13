@@ -1,19 +1,19 @@
-"use server"
+"use server";
 
-import { EmailContent, EmailProductInfo, NotificationType } from '@/types';
-import nodemailer from 'nodemailer';
+import { EmailContent, EmailProductInfo, NotificationType } from "@/types";
+import nodemailer from "nodemailer";
 
 const Notification = {
-  WELCOME: 'WELCOME',
-  CHANGE_OF_STOCK: 'CHANGE_OF_STOCK',
-  LOWEST_PRICE: 'LOWEST_PRICE',
-  THRESHOLD_MET: 'THRESHOLD_MET',
-}
+  WELCOME: "WELCOME",
+  CHANGE_OF_STOCK: "CHANGE_OF_STOCK",
+  LOWEST_PRICE: "LOWEST_PRICE",
+  THRESHOLD_MET: "THRESHOLD_MET",
+};
 
 export async function generateEmailBody(
   product: EmailProductInfo,
   type: NotificationType
-  ) {
+) {
   const THRESHOLD_PERCENTAGE = 40;
   // Shorten the product title
   const shortenedTitle =
@@ -81,27 +81,30 @@ export async function generateEmailBody(
 }
 
 const transporter = nodemailer.createTransport({
-  pool: true,
-  service: 'hotmail',
-  port: 2525,
+  service: "Gmail",
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
   auth: {
-    user: 'h7384285@outlook.com',
-    pass: process.env.EMAIL_PASSWORD,
+    user: process.env.EMAIL,
+    pass: process.env.APP_PASSWORD,
   },
-  maxConnections: 1
-})
+});
 
-export const sendEmail = async (emailContent: EmailContent, sendTo: string[]) => {
+export const sendEmail = async (
+  emailContent: EmailContent,
+  sendTo: string[]
+) => {
   const mailOptions = {
-    from: 'h7384285@outlook.com',
+    from: "h7384285@outlook.com",
     to: sendTo,
     html: emailContent.body,
     subject: emailContent.subject,
-  }
+  };
 
   transporter.sendMail(mailOptions, (error: any, info: any) => {
-    if(error) return console.log(error);
-    
-    console.log('Email sent: ', info);
-  })
-}
+    if (error) return console.log(error);
+
+    console.log("Email sent: ", info);
+  });
+};
